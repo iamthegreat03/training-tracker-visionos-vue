@@ -36,6 +36,17 @@ function handleEsc(e) {
   }
 }
 
-onMounted(() => document.addEventListener('keydown', handleEsc))
-onUnmounted(() => document.removeEventListener('keydown', handleEsc))
+onMounted(() => {
+  document.addEventListener('keydown', handleEsc)
+  // Prevent background scroll on iOS when modal is open
+  document.body.style.overflow = 'hidden'
+  document.body.style.position = 'fixed'
+  document.body.style.width = '100%'
+})
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEsc)
+  document.body.style.overflow = ''
+  document.body.style.position = ''
+  document.body.style.width = ''
+})
 </script>

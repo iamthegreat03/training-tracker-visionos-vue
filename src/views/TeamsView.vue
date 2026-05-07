@@ -36,7 +36,7 @@
     </div>
 
     <!-- Team Cards Grid -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bdr)">
+    <div class="teams-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bdr)">
       <div v-for="(t, i) in store.teams" :key="t.id"
         style="background:var(--bg)"
         :style="{ borderLeft: `2px solid ${COLORS[i % COLORS.length]}` }">

@@ -1,5 +1,5 @@
 <template>
-  <div class="lgp">
+  <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:20px;overflow-y:auto">
     <div class="lgb a-sc">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:22px">
         <div class="sb-mark">PT</div>

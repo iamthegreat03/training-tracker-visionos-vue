@@ -1,5 +1,5 @@
 <template>
-  <div v-if="booting" class="lp">
+  <div v-if="booting" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:var(--bg)">
     <div class="lp-m">PT TRACKER</div>
     <div class="spin"></div>
   </div>
@@ -75,8 +75,9 @@
 
         <header id="tb">
           <span id="tb-title">{{ pageTitle }}</span>
-          <div id="tb-meta" style="display:flex;align-items:center;gap:10px">
+          <div id="tb-meta" style="display:flex !important;align-items:center;gap:10px">
             <button class="tt" @click="toggleTheme">{{ isDark ? '☀ Light' : '◑ Dark' }}</button>
+            <button style="background:none;border:1px solid var(--bdr);padding:5px 10px;color:var(--t2);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.5px" @click="signOut">SIGN OUT</button>
           </div>
         </header>
 
@@ -93,6 +94,25 @@
               <span>{{ item.label }}</span>
             </button>
           </RouterLink>
+          <!-- More tab for trainer — shows admin pages -->
+          <button v-if="store.isTrainer" class="bn-item"
+            :class="{ on: ['/designers','/teams','/users'].includes(route.path) }"
+            @click="showMoreMenu = !showMoreMenu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+            <span>More</span>
+          </button>
+        </div>
+
+        <!-- More menu overlay -->
+        <div v-if="showMoreMenu" style="position:fixed;inset:0;z-index:45;background:rgba(0,0,0,.6)" @click="showMoreMenu=false">
+          <div style="position:absolute;bottom:56px;left:0;right:0;background:var(--sb);border-top:1px solid var(--bdr-s);padding:8px 0" @click.stop>
+            <RouterLink v-for="item in adminNav" :key="item.to" :to="item.to" custom v-slot="{ navigate }">
+              <button class="ni" style="width:100%;padding:14px 20px;font-size:14px;gap:14px"
+                @click="navigate(); showMoreMenu=false">
+                <span v-html="item.icon"></span>{{ item.label }}
+              </button>
+            </RouterLink>
+          </div>
         </div>
       </nav>
     </template>
@@ -172,6 +192,8 @@ const desNav = [
   { to: '/badges',  label: 'Badges',  icon: ICON.badges },
 ]
 
+const showMoreMenu = ref(false)
+
 const bottomNav = computed(() => {
   if (store.isDesigner) return desNav
   return [
@@ -212,7 +234,6 @@ function toggleTheme() { isDark.value = !isDark.value; applyTheme(isDark.value) 
 async function signOut() {
   await db.auth.signOut()
   store.user = null
-  document.body.classList.remove('authed')
   router.push('/login')
 }
 
@@ -229,7 +250,6 @@ onMounted(async () => {
   if (session?.user) {
     await store.setUser(session.user)
     await store.loadAll()
-    document.body.classList.add('authed')
     router.push(store.isDesigner ? '/home' : '/')
   } else {
     router.push('/login')

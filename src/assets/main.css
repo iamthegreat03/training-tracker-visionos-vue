@@ -831,10 +831,44 @@
             text-transform: uppercase
         }
 
+        /* Mobile: modal must scroll internally and footer must stay above bottom nav */
+        @media(max-width:640px) {
+            .bkd {
+                padding-bottom: max(env(safe-area-inset-bottom, 0px), 0px)
+            }
+            .mdl {
+                max-height: 85vh;
+                display: flex;
+                flex-direction: column
+            }
+            .mdl-bd {
+                flex: 1;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch
+            }
+            .mdl-ft {
+                flex-shrink: 0;
+                padding-bottom: max(env(safe-area-inset-bottom, 0px), 12px)
+            }
+        }
+
         .mdl-bd {
             padding: 22px;
             overflow-y: auto;
             flex: 1
+        }
+
+        @media(max-width:640px) {
+            .mdl {
+                max-height: calc(90vh - env(safe-area-inset-bottom));
+                overflow-y: auto
+            }
+            .mdl-ft {
+                position: sticky;
+                bottom: 0;
+                background: var(--bg);
+                z-index: 10
+            }
         }
 
         .mdl-ft {
@@ -1519,7 +1553,7 @@
             }
 
             #page {
-                padding: 12px 10px 80px
+                padding: 12px 10px calc(60px + env(safe-area-inset-bottom, 0px))
             }
 
             #tb {
@@ -1608,7 +1642,7 @@
             }
 
             .mdl-ft {
-                padding: 30px 22px;
+                padding: 14px 14px calc(14px + env(safe-area-inset-bottom, 0px));
                 gap: 8px
             }
 
@@ -1787,7 +1821,6 @@
 
         /* â”€â”€ BOTTOM NAV (mobile) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         #bnav {
-            display: none;
             position: fixed;
             bottom: 0;
             left: 0;
@@ -1795,9 +1828,7 @@
             background: var(--sb);
             border-top: 1px solid var(--bdr-s);
             z-index: 40;
-            padding: 0;
-            /* Safe area: at least 8px extra so the home indicator pill doesn't overlap */
-            padding-bottom: max(env(safe-area-inset-bottom), 8px);
+            padding-bottom: env(safe-area-inset-bottom, 0px)
         }
 
         #bnav-inner {
@@ -1846,8 +1877,8 @@
         }
 
         @media(max-width:640px) {
-            body.authed #bnav {
-                display: block
+            #bnav {
+                display: flex !important
             }
         }
 
