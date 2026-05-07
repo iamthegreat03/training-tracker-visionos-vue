@@ -261,10 +261,12 @@
 import { ref, computed } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { db } from '@/lib/supabase'
+import { useToast } from '@/composables/useToast'
 import { pct, init, PLATFORMS, LEVELS, LEVEL_SHORT, LEVEL_COLOR } from '@/lib/utils'
 import AppModal from '@/components/AppModal.vue'
 
 const store = useAppStore()
+const { toast } = useToast()
 
 const platFilter = ref('All')
 const lvlFilter = ref('All')

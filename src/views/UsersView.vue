@@ -175,8 +175,10 @@ import { ref, reactive, onMounted } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { db } from '@/lib/supabase'
 import AppModal from '@/components/AppModal.vue'
+import { useToast } from '@/composables/useToast'
 
 const store = useAppStore()
+const { toast } = useToast()
 
 // ── Constants ────────────────────────────────────────────────────────────
 const DEFAULT_MGR_PERMS = {
@@ -224,7 +226,9 @@ async function loadUsers() {
 async function removeUser(id) {
   if (!confirm('Remove this user role? They will lose access.')) return
   const { error } = await db.from('user_roles').delete().eq('id', id)
-  if (!error) await loadUsers()
+  if (error) { toast(error.message, 'er'); return }
+  toast('User removed')
+  await loadUsers()
 }
 
 onMounted(() => loadUsers())
@@ -332,7 +336,10 @@ async function savePerms() {
   const permsPayload = {}
   PERM_KEYS.forEach(k => { permsPayload[k] = permForm[k] })
   const { error } = await db.from('user_roles').update({ permissions: permsPayload }).eq('id', permsUser.value.id)
-  if (!error) { showPermsModal.value = false; await loadUsers() }
+  if (error) { toast(error.message, 'er'); saving.value = false; return }
+  toast('Permissions saved')
+  showPermsModal.value = false
+  await loadUsers()
   saving.value = false
 }
 </script>

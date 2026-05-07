@@ -323,8 +323,10 @@ import { useAppStore } from '@/stores/app'
 import { db } from '@/lib/supabase'
 import { pct, init, fmtDs, TIERS } from '@/lib/utils'
 import AppModal from '@/components/AppModal.vue'
+import { useToast } from '@/composables/useToast'
 
 const store = useAppStore()
+const { toast } = useToast()
 
 // ── Filters & Sort ──────────────────────────────────────────────────────
 const search = ref('')
@@ -445,14 +447,19 @@ async function saveDes() {
   const { error } = editForm.id
     ? await db.from('designers').update(payload).eq('id', editForm.id)
     : await db.from('designers').insert(payload)
-  if (!error) { showEdit.value = false; await store.loadAll() }
+  if (error) { toast(error.message, 'er'); saving.value = false; return }
+  toast(editForm.id ? 'Designer updated' : 'Designer added')
+  showEdit.value = false
+  await store.loadAll()
   saving.value = false
 }
 
 async function deleteDes(id) {
   if (!confirm('Delete this designer? This cannot be undone.')) return
   const { error } = await db.from('designers').delete().eq('id', id)
-  if (!error) await store.loadAll()
+  if (error) { toast(error.message, 'er'); return }
+  toast('Designer deleted')
+  await store.loadAll()
 }
 
 // ── Transfer ─────────────────────────────────────────────────────────────
@@ -470,7 +477,10 @@ async function doXfer() {
   if (!xferTeam.value) return
   saving.value = true
   const { error } = await db.from('designers').update({ team: xferTeam.value }).eq('id', xferDes.value.id)
-  if (!error) { showXfer.value = false; await store.loadAll() }
+  if (error) { toast(error.message, 'er'); saving.value = false; return }
+  toast(`${xferDes.value.name} transferred to ${xferTeam.value}`)
+  showXfer.value = false
+  await store.loadAll()
   saving.value = false
 }
 
@@ -486,7 +496,11 @@ async function doBulkEnroll() {
   saving.value = true
   const rows = [...selSet.value].map(did => ({ training_id: bulkEnrollTid.value, designer_id: did, designer_schedule: [] }))
   const { error } = await db.from('training_enrollments').upsert(rows, { onConflict: 'training_id,designer_id' })
-  if (!error) { showBulkEnroll.value = false; exitBulk(); await store.loadAll() }
+  if (error) { toast(error.message, 'er'); saving.value = false; return }
+  toast(`${selSet.value.size} designer${selSet.value.size !== 1 ? 's' : ''} enrolled`)
+  showBulkEnroll.value = false
+  exitBulk()
+  await store.loadAll()
   saving.value = false
 }
 
@@ -502,6 +516,7 @@ async function doBulkTransfer() {
   for (const did of selSet.value) {
     await db.from('designers').update({ team: bulkXferTeam.value }).eq('id', did)
   }
+  toast(`${selSet.value.size} designer${selSet.value.size !== 1 ? 's' : ''} transferred to ${bulkXferTeam.value}`)
   showBulkTransfer.value = false
   exitBulk()
   await store.loadAll()
@@ -516,6 +531,7 @@ async function doBulkDelete() {
   for (const did of selSet.value) {
     await db.from('designers').delete().eq('id', did)
   }
+  toast(`${selSet.value.size} designer${selSet.value.size !== 1 ? 's' : ''} deleted`)
   exitBulk()
   await store.loadAll()
   saving.value = false

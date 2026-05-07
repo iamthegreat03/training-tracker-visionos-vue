@@ -261,8 +261,10 @@ import { useAppStore } from '@/stores/app'
 import { db } from '@/lib/supabase'
 import { pct, init } from '@/lib/utils'
 import AppModal from '@/components/AppModal.vue'
+import { useToast } from '@/composables/useToast'
 
 const store = useAppStore()
+const { toast } = useToast()
 
 const COLORS = ['var(--t1)', 'var(--g)', 'var(--bl)', 'var(--a)', 'var(--r)', 'rgba(255,255,255,.4)']
 
@@ -339,6 +341,8 @@ async function saveReshuffle() {
   for (const [did, team] of entries) {
     await db.from('designers').update({ team }).eq('id', did)
   }
+  const count = entries.length
+  toast(`${count} designer${count !== 1 ? 's' : ''} reshuffled`)
   cancelReshuffle()
   await store.loadAll()
   saving.value = false
@@ -357,7 +361,10 @@ async function addTeam() {
   if (!newTeamName.value.trim()) return
   saving.value = true
   const { error } = await db.from('teams').insert({ name: newTeamName.value.trim() })
-  if (!error) { showAddTeam.value = false; await store.loadAll() }
+  if (error) { toast(error.message, 'er'); saving.value = false; return }
+  toast(`Team "${newTeamName.value.trim()}" created`)
+  showAddTeam.value = false
+  await store.loadAll()
   saving.value = false
 }
 
@@ -380,7 +387,11 @@ async function deleteTeam() {
   await db.from('designers').update({ team: null }).eq('team', deleteTarget.value.name)
   // Delete the team record
   const { error } = await db.from('teams').delete().eq('id', deleteTarget.value.id)
-  if (!error) { showDeleteTeam.value = false; deleteTarget.value = null; await store.loadAll() }
+  if (error) { toast(error.message, 'er'); saving.value = false; return }
+  toast('Team deleted')
+  showDeleteTeam.value = false
+  deleteTarget.value = null
+  await store.loadAll()
   saving.value = false
 }
 

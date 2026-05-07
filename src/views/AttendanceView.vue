@@ -392,7 +392,10 @@ async function markAll(val) {
       }
    }
    if(upserts.length) {
-      db.from('attendance').upsert(upserts, { onConflict: 'session_id,designer_id' }).then(()=>store.loadAll())
+      const { error: maErr } = await db.from('attendance').upsert(upserts, { onConflict: 'session_id,designer_id' })
+      if (maErr) toast(maErr.message, 'er')
+      else toast(`Marked ${upserts.length} designer${upserts.length !== 1 ? 's' : ''}`)
+      await store.loadAll()
    }
 }
 
@@ -408,14 +411,19 @@ async function addSession() {
       session_date: newSessDate.value,
       day_of_week: d.toLocaleDateString('en-US', { weekday: 'long' })
    }])
-   if (!error) { showAddSess.value = false; await store.loadAll() }
+   if (error) { toast(error.message, 'er'); saving.value = false; return }
+   toast('Session added')
+   showAddSess.value = false
+   await store.loadAll()
    saving.value = false
 }
 
 const confirmDelSess = ref(false)
 async function delSession() {
    saving.value = true
-   await db.from('training_sessions').delete().eq('id', session.value.id)
+   const { error: delErr } = await db.from('training_sessions').delete().eq('id', session.value.id)
+   if (delErr) { toast(delErr.message, 'er'); saving.value = false; return }
+   toast('Session deleted')
    selS.value = null
    confirmDelSess.value = false
    await store.loadAll()
@@ -437,7 +445,10 @@ async function saveNote() {
    const { error } = await db.from('attendance').upsert({
       session_id: sid, designer_id: did, notes: noteText.value || null
    }, { onConflict: 'session_id,designer_id' })
-   if (!error) { showNote.value = false; await store.loadAll() }
+   if (error) { toast(error.message, 'er'); saving.value = false; return }
+   toast('Note saved')
+   showNote.value = false
+   await store.loadAll()
    saving.value = false
 }
 
@@ -462,7 +473,10 @@ async function saveReschedule() {
    const { error } = await db.from('makeup_sessions').insert([{
       designer_id: did, original_session_id: sid, makeup_date: muDate.value
    }])
-   if (!error) { showReschedule.value = false; await store.loadAll() }
+   if (error) { toast(error.message, 'er'); saving.value = false; return }
+   toast('Make-up scheduled')
+   showReschedule.value = false
+   await store.loadAll()
    saving.value = false
 }
 
