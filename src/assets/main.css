@@ -848,7 +848,7 @@
             }
             .mdl-ft {
                 flex-shrink: 0;
-                padding-bottom: max(env(safe-area-inset-bottom, 0px), 12px)
+                padding: 14px 14px max(env(safe-area-inset-bottom, 0px), 14px)
             }
         }
 
@@ -1828,6 +1828,7 @@
             background: var(--sb);
             border-top: 1px solid var(--bdr-s);
             z-index: 40;
+            display: flex;
             padding-bottom: env(safe-area-inset-bottom, 0px)
         }
 
