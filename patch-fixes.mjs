@@ -1,4 +1,45 @@
-<template>
+// patch-fixes.mjs — run from training-tracker-vue/ root
+// Usage: node patch-fixes.mjs
+// Fixes:
+//  1. App.vue — add body.authed class on login so mobile bottom nav shows
+//  2. DashboardView.vue — replace stub with full dashboard matching legacy
+//  3. DesignersView.vue — remove EDIT button from profile modal footer
+
+import { readFileSync, writeFileSync } from 'fs'
+
+// ── Fix 1: App.vue — add body.authed on mount ─────────────────
+let app = readFileSync('./src/App.vue', 'utf8')
+
+app = app.replace(
+  `    await store.setUser(session.user)
+    await store.loadAll()
+    router.push(store.isDesigner ? '/home' : '/')`,
+  `    await store.setUser(session.user)
+    await store.loadAll()
+    document.body.classList.add('authed')
+    router.push(store.isDesigner ? '/home' : '/')`
+)
+
+// Also add authed class removal on sign out
+app = app.replace(
+  `async function signOut() {
+  await db.auth.signOut()
+  store.user = null
+  router.push('/login')
+}`,
+  `async function signOut() {
+  await db.auth.signOut()
+  store.user = null
+  document.body.classList.remove('authed')
+  router.push('/login')
+}`
+)
+
+writeFileSync('./src/App.vue', app)
+console.log('✓ Fix 1 — App.vue: body.authed class added/removed on auth state')
+
+// ── Fix 2: DashboardView.vue — full dashboard ─────────────────
+const dashboard = `<template>
   <div>
     <div class="sh">
       <div>
@@ -295,3 +336,28 @@ function sessStats(sid) {
   return { pr, lt, ab, rate: pct(pr + lt, pr + lt + ab) }
 }
 </script>
+`
+
+writeFileSync('./src/views/DashboardView.vue', dashboard)
+console.log('✓ Fix 2 — DashboardView.vue: full dashboard with all 6 sections')
+
+// ── Fix 3: DesignersView.vue — remove EDIT button from profile modal footer ─
+let dv = readFileSync('./src/views/DesignersView.vue', 'utf8')
+
+dv = dv.replace(
+  `      <template #footer>
+        <button class="btn btn-g" @click="showProfile = false">CLOSE</button>
+        <button v-if="store.can('can_add_designers')" class="btn btn-p" @click="showProfile = false; openDesEdit(profDes?.id)">EDIT</button>
+      </template>`,
+  `      <template #footer>
+        <button class="btn btn-g" @click="showProfile = false">CLOSE</button>
+      </template>`
+)
+
+writeFileSync('./src/views/DesignersView.vue', dv)
+console.log('✓ Fix 3 — DesignersView.vue: EDIT button removed from profile modal footer')
+
+console.log('\nAll fixes applied. Commit and push:')
+console.log('  git add .')
+console.log('  git commit -m "fix: bottom nav, full dashboard, designers modal"')
+console.log('  git push')

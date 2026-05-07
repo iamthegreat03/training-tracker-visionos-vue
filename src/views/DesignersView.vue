@@ -311,7 +311,6 @@
 
       <template #footer>
         <button class="btn btn-g" @click="showProfile = false">CLOSE</button>
-        <button v-if="store.can('can_add_designers')" class="btn btn-p" @click="showProfile = false; openDesEdit(profDes?.id)">EDIT</button>
       </template>
     </AppModal>
 

@@ -215,6 +215,7 @@ function toggleTheme() { isDark.value = !isDark.value; applyTheme(isDark.value) 
 async function signOut() {
   await db.auth.signOut()
   store.user = null
+  document.body.classList.remove('authed')
   router.push('/login')
 }
 
@@ -231,6 +232,7 @@ onMounted(async () => {
   if (session?.user) {
     await store.setUser(session.user)
     await store.loadAll()
+    document.body.classList.add('authed')
     router.push(store.isDesigner ? '/home' : '/')
   } else {
     router.push('/login')
