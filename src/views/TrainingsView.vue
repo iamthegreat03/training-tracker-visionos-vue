@@ -353,6 +353,7 @@
   :style="{ opacity: editT.schedule.includes(item) ? 1 : 0.2, cursor: editT.schedule.includes(item) ? 'pointer' : 'not-allowed', pointerEvents: editT.schedule.includes(item) ? 'auto' : 'none', minWidth: editT.type === 'Discussion' ? '48px' : '32px' }"
   :title="editT.type === 'Discussion' ? fmtDs(item) : item"
   @click="toggleEnrollDay(d.id, item)">
+                  {{ editT.type === 'Discussion' ? fmtDs(item).toUpperCase() : item.slice(0,3).toUpperCase() }}
                 </button>
               </div>
               <div v-else style="padding:0 12px;font-size:9px;color:var(--t4);font-family:'JetBrains Mono',monospace">CLICK TO ENROLL</div>

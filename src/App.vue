@@ -56,7 +56,7 @@
               <div class="u-nm">{{ displayName }}</div>
               <div class="u-rl">{{ store.role }}</div>
             </div>
-            <button class="btn btn-ic" style="padding:5px;color:var(--t3);flex-shrink:0" title="Sign out" @click="signOut">
+            <button style="background:none;border:none;padding:5px;color:var(--t3);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:color .13s" title="Sign out" @click="signOut" @mouseover="$event.currentTarget.style.color='var(--t1)'" @mouseleave="$event.currentTarget.style.color='var(--t3)'">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                 <polyline points="16 17 21 12 16 7"/>
@@ -64,9 +64,6 @@
               </svg>
             </button>
           </div>
-          <button class="tt" id="tt-btn" style="margin:8px 8px 0" @click="toggleTheme">
-            {{ isDark ? '☀ Light' : '◑ Dark' }}
-          </button>
         </div>
       </nav>
 

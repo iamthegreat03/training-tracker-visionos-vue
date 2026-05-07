@@ -60,17 +60,23 @@
 
       <!-- Selected Session Details -->
       <div v-if="session" class="card">
-        <div class="c-hd">
-          <div>
+        <div class="c-hd" style="flex-wrap:wrap;gap:10px">
+          <div style="flex:1;min-width:200px">
             <span class="c-ttl">{{ new Date(session.session_date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase() }}</span>
             <div style="font-size:9px;color:var(--t4);font-family:'JetBrains Mono',monospace;margin-top:3px">CLICK ○ → ✓ PRESENT → ~ LATE → ✗ ABSENT → ○ CLEAR</div>
           </div>
-          <div style="display:flex;align-items:center;gap:7px">
-             <template v-if="store.can('can_edit_training')">
-               <button class="btn btn-g btn-xs" @click="openProof(session.proof_url)">PROOF URL</button>
-               <button class="btn btn-g btn-xs" style="border-color:var(--r);color:var(--r)" @click="confirmDelSess = true">DELETE</button>
-             </template>
-             <button v-else-if="session.proof_url" class="btn btn-g btn-xs" @click="openProof(session.proof_url)">VIEW PROOF</button>
+          <!-- Proof URL inline input -->
+          <div style="display:flex;align-items:center;gap:7px;flex-shrink:0">
+            <input v-if="store.can('can_add_sessions')" class="inp" style="width:200px;padding:5px 9px;font-size:11px" placeholder="Paste screenshot / video link…" :value="session.proof_url || ''" @change="saveProofUrl(session.id, $event.target.value)" />
+            <a v-if="session.proof_url" :href="session.proof_url" target="_blank" class="btn btn-g btn-sm">OPEN ↗</a>
+          </div>
+          <!-- Attendance filter chips -->
+          <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
+            <span style="font-size:9px;color:var(--t3);font-family:'JetBrains Mono',monospace">FILTER:</span>
+            <button v-for="f in ['all','present','late','absent','unmarked']" :key="f"
+              class="chip btn-xs" :class="{ on: attFilter === f }"
+              style="padding:3px 8px;font-size:8px"
+              @click="attFilter = f">{{ f.toUpperCase() }}</button>
           </div>
         </div>
         
@@ -180,6 +186,7 @@ const { toast } = useToast()
 
 const selT = ref(null)
 const selS = ref(null)
+const attFilter = ref('all')
 
 const training = computed(() => store.trainings.find(t => t.id === selT.value))
 const tSess = computed(() => store.sessions.filter(s => s.training_id === selT.value).sort((a,b) => new Date(a.session_date) - new Date(b.session_date)))
@@ -204,6 +211,7 @@ const stats = computed(() => {
   return { present, late, absent, unmarked }
 })
 
+// Filtered teams based on attFilter
 const teams = computed(() => {
    if (!training.value) return []
    const desMap = new Map(store.designers.map(d => [d.id, d]))
@@ -418,6 +426,12 @@ function openReschedule(sid, did) {
    muDate.value = ''
    showReschedule.value = true
 }
+async function saveProofUrl(sessionId, url) {
+  const { error } = await db.from('training_sessions').update({ proof_url: url || null }).eq('id', sessionId)
+  if (!error) { toast('Proof link saved'); await store.loadAll() }
+  else toast(error.message, 'er')
+}
+
 async function saveReschedule() {
    if(!muDate.value) return
    saving.value = true
