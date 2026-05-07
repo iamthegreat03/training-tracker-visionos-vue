@@ -37,7 +37,7 @@
     </div>
 
     <!-- Attendance by Team + Active Trainings -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--bdr);border:1px solid var(--bdr);margin-bottom:16px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:1px;background:var(--bdr);border:1px solid var(--bdr);margin-bottom:16px">
       <div class="card" style="border:none">
         <div class="c-hd"><span class="c-ttl">Attendance by Team</span></div>
         <div v-if="teamStats.length === 0" class="empty"><div class="ec">— NO DATA —</div></div>
@@ -75,7 +75,7 @@
     </div>
 
     <!-- Upcoming + Top Performers + Ending Soon -->
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--bdr);border:1px solid var(--bdr);margin-bottom:16px" class="dash-3col">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1px;background:var(--bdr);border:1px solid var(--bdr);margin-bottom:16px" class="dash-3col">
       <!-- Upcoming sessions -->
       <div class="card" style="border:none">
         <div class="c-hd"><span class="c-ttl">Upcoming Sessions (7 days)</span></div>
@@ -129,7 +129,7 @@
         <span class="c-ttl">Skill Coverage by Platform</span>
         <span style="font-size:9px;color:var(--t4);font-family:'JetBrains Mono',monospace">% of designers with any skill level</span>
       </div>
-      <div style="padding:16px 20px;display:grid;grid-template-columns:repeat(5,1fr);gap:16px" class="skill-cov-grid">
+      <div style="padding:16px 20px;display:grid;grid-template-columns:repeat(auto-fit, minmax(110px, 1fr));gap:16px" class="skill-cov-grid">
         <div v-for="s in skillCoverage" :key="s.platform">
           <div style="font-size:9px;color:var(--t4);font-family:'JetBrains Mono',monospace;letter-spacing:.6px;margin-bottom:8px">{{ s.platform.toUpperCase() }}</div>
           <div style="height:4px;background:var(--bdr);overflow:hidden;margin-bottom:5px">

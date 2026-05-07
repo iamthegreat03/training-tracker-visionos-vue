@@ -34,7 +34,7 @@
       </div>
 
       <!-- Stats Bar -->
-      <div class="sg" style="grid-template-columns:repeat(5,1fr);margin-bottom:20px">
+      <div class="sg" style="grid-template-columns:repeat(auto-fit, minmax(100px, 1fr));margin-bottom:20px">
         <div class="st"><div class="st-l">Enrolled</div><div class="st-v">{{ myT.length }}</div></div>
         <div class="st"><div class="st-l">Attended</div><div class="st-v" style="color:var(--g)">{{ present.length }}</div></div>
         <div class="st"><div class="st-l">Absent</div><div class="st-v" style="color:var(--r)">{{ absent.length }}</div></div>

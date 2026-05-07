@@ -21,7 +21,7 @@
     </div>
 
     <!-- Quick Stats -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--bdr);border:1px solid var(--bdr);margin-bottom:16px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));gap:1px;background:var(--bdr);border:1px solid var(--bdr);margin-bottom:16px">
       <div style="background:var(--bg);padding:10px 16px">
         <div style="font-size:9px;color:var(--t4);font-family:'JetBrains Mono',monospace;letter-spacing:.8px">AVG ATTENDANCE</div>
         <div style="font-size:18px;font-weight:300;font-family:'JetBrains Mono',monospace;margin-top:2px"
@@ -247,7 +247,7 @@
         </div>
 
         <!-- Stats row -->
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bdr);border:1px solid var(--bdr);margin-bottom:20px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(100px, 1fr));gap:1px;background:var(--bdr);border:1px solid var(--bdr);margin-bottom:20px">
           <div style="background:var(--bg);padding:12px 14px">
             <div style="font-size:9px;color:var(--t4);font-family:'JetBrains Mono',monospace;letter-spacing:.6px">TRAININGS</div>
             <div style="font-size:20px;font-weight:300;font-family:'JetBrains Mono',monospace;color:var(--t1);margin-top:3px">{{ profTrainings.length }}</div>

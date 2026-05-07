@@ -51,10 +51,10 @@
         </div>
       </div>
 
-      <!-- Per Platform Desktop -->
-      <div style="background:var(--bg);padding:18px 20px" class="platdist-desktop">
+      <!-- Per Platform Distribution (responsive) -->
+      <div style="background:var(--bg);padding:18px 20px">
         <div style="font-size:9px;color:var(--t4);font-family:'JetBrains Mono',monospace;letter-spacing:.8px;margin-bottom:14px">PER PLATFORM DISTRIBUTION</div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(120px, 1fr));gap:12px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(110px, 1fr));gap:12px">
           <div v-for="pd in platDist" :key="pd.pl">
             <div style="font-size:9px;color:var(--t2);font-family:'JetBrains Mono',monospace;margin-bottom:8px;letter-spacing:.3px">{{ pd.pl.toUpperCase() }}</div>
             <div style="margin-bottom:4px">

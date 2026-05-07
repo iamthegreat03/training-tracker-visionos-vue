@@ -11,7 +11,7 @@
     <template v-else>
 
       <!-- Summary -->
-      <div class="sg" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px">
+      <div class="sg" style="grid-template-columns:repeat(auto-fit, minmax(100px, 1fr));margin-bottom:24px">
         <div class="st">
           <div class="st-l">Total Skills</div>
           <div class="st-v" style="color:var(--g)">{{ mySkills.length }}</div>

@@ -1,4 +1,4 @@
-﻿#section-Hwbb2zpWUW>.inner {
+#section-Hwbb2zpWUW>.inner {
             max-width: 100%;
         }
 
@@ -73,6 +73,7 @@
         html,
         body {
             height: 100%;
+            height: 100dvh;
             font-family: 'Inter', sans-serif;
             background: var(--bg);
             color: var(--t1);
@@ -80,7 +81,8 @@
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             transition: background .25s, color .25s;
-            overflow: hidden
+            overflow: hidden;
+            overscroll-behavior-y: none;
         }
 
         button,
@@ -199,6 +201,7 @@
         #app {
             display: flex;
             height: 100vh;
+            height: 100dvh;
             overflow: hidden
         }
 
@@ -837,7 +840,7 @@
                 padding-bottom: max(env(safe-area-inset-bottom, 0px), 0px)
             }
             .mdl {
-                max-height: 85vh;
+                max-height: 85dvh;
                 display: flex;
                 flex-direction: column
             }
@@ -858,18 +861,6 @@
             flex: 1
         }
 
-        @media(max-width:640px) {
-            .mdl {
-                max-height: calc(90vh - env(safe-area-inset-bottom));
-                overflow-y: auto
-            }
-            .mdl-ft {
-                position: sticky;
-                bottom: 0;
-                background: var(--bg);
-                z-index: 10
-            }
-        }
 
         .mdl-ft {
             padding: 14px 22px;
@@ -1389,7 +1380,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            height: 100dvh;
             flex-direction: column;
             gap: 14px;
             background: var(--bg)
@@ -1404,7 +1395,7 @@
         }
 
         .lgp {
-            min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1547,6 +1538,12 @@
         /* Mobile â€” all fixes */
         @media(max-width:640px) {
 
+            /* iOS PWA: the body background shows through the safe-area zone.
+               Matching it to the nav colour makes the gap invisible. */
+            body {
+                background: var(--sb)
+            }
+
             /* Layout */
             #sb {
                 display: none
@@ -1562,34 +1559,6 @@
             }
 
             #tb-title {
-                font-size: 9px;
-                letter-spacing: .5px
-            }
-
-            #tb-meta {
-                display: none
-            }
-
-            /* Stats grid â€” 2 col */
-            .sg {
-                grid-template-columns: 1fr 1fr !important;
-                gap: 1px
-            }
-
-            .st {
-                padding: 14px 12px
-            }
-
-            .st-v {
-                font-size: 20px
-            }
-
-            .st-l {
-                font-size: 8px
-            }
-
-            /* Cards */
-            .c-hd {
                 padding: 10px 12px;
                 flex-wrap: wrap;
                 gap: 6px
@@ -1616,7 +1585,7 @@
             /* Modal â€” bottom sheet WITH side spacing */
             .mdl {
                 max-width: 100% !important;
-                max-height: 92vh !important;
+                max-height: 92dvh !important;
                 width: 100%;
                 border-left: none;
                 border-right: none;
@@ -1829,22 +1798,15 @@
             background: var(--sb);
             border-top: 1px solid var(--bdr-s);
             z-index: 40;
-            padding-bottom: env(safe-area-inset-bottom, 0px)
-        }
-
-        #bnav::after {
-            content: '';
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: env(safe-area-inset-bottom, 0px);
-            background: var(--sb)
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            box-shadow: 0 100px 0 0 var(--sb);
+            transform: translateZ(0);
         }
 
         #bnav-inner {
             display: flex;
-            align-items: stretch
+            align-items: stretch;
+            width: 100%
         }
 
         .bn-item {
@@ -1890,6 +1852,18 @@
         @media(max-width:640px) {
             #bnav {
                 display: flex !important
+            }
+            /* Fill the iOS safe-area gap below the nav bar with the nav's background */
+            #bnav-saf {
+                display: block;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: env(safe-area-inset-bottom, 0px);
+                background: var(--sb);
+                z-index: 41;
+                pointer-events: none
             }
         }
 

@@ -11,7 +11,7 @@
     <template v-else>
 
       <!-- Summary Stats -->
-      <div class="sg" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
+      <div class="sg" style="grid-template-columns:repeat(auto-fit, minmax(100px, 1fr));margin-bottom:20px">
         <div class="st"><div class="st-l">Total Sessions</div><div class="st-v">{{ totalSessions }}</div></div>
         <div class="st"><div class="st-l">Present</div><div class="st-v" style="color:var(--g)">{{ totalPresent }}</div></div>
         <div class="st"><div class="st-l">Late</div><div class="st-v" style="color:var(--a)">{{ totalLate }}</div></div>

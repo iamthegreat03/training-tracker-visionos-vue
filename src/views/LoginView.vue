@@ -1,6 +1,6 @@
 <template>
   <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:20px;overflow-y:auto">
-    <div class="lgb a-sc">
+    <div class="lgb a-sc" style="margin: auto; width: 100%; max-width: 400px;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:22px">
         <div class="sb-mark">PT</div>
         <div>

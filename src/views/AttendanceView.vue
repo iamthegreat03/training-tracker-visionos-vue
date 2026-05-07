@@ -60,19 +60,19 @@
 
       <!-- Selected Session Details -->
       <div v-if="session" class="card">
-        <div style="padding:12px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-          <div style="min-width:200px">
+        <div class="att-sess-hd">
+          <div class="att-sess-info">
             <span class="c-ttl">{{ new Date(session.session_date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase() }}</span>
             <div style="font-size:9px;color:var(--t4);font-family:'JetBrains Mono',monospace;margin-top:3px">CLICK ○ → ✓ PRESENT → ~ LATE → ✗ ABSENT → ○ CLEAR</div>
           </div>
           <!-- Proof URL inline input -->
-          <div style="display:flex;align-items:center;justify-content:center;gap:7px;flex:1">
-            <input v-if="store.can('can_add_sessions')" class="inp" style="width:200px;padding:5px 9px;font-size:11px" placeholder="Paste screenshot / video link…" :value="session.proof_url || ''" @change="saveProofUrl(session.id, $event.target.value)" />
+          <div class="att-proof-row">
+            <input v-if="store.can('can_add_sessions')" class="inp att-proof-inp" placeholder="Paste screenshot / video link…" :value="session.proof_url || ''" @change="saveProofUrl(session.id, $event.target.value)" />
             <a v-if="session.proof_url" :href="session.proof_url" target="_blank" class="btn btn-g btn-sm">OPEN ↗</a>
           </div>
           <!-- Attendance filter chips -->
-          <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;margin-left:auto">
-            <span style="font-size:9px;color:var(--t3);font-family:'JetBrains Mono',monospace">FILTER:</span>
+          <div class="att-filter-row">
+            <span style="font-size:9px;color:var(--t3);font-family:'JetBrains Mono',monospace;white-space:nowrap">FILTER:</span>
             <button v-for="f in ['all','present','late','absent','unmarked']" :key="f"
               class="chip btn-xs" :class="{ on: attFilter === f }"
               style="padding:3px 8px;font-size:8px"
@@ -266,7 +266,10 @@ function isScheduledDes(did) {
   const enrRow = store.enrollments.find(e => e.training_id === training.value.id && e.designer_id === did)
   const desDays = enrRow?.designer_schedule || []
   const isDisc = desDays.length > 0 && desDays[0].includes('-')
-  return !desDays.length || (isDisc ? desDays.includes(session.value.session_date) : desDays.includes(session.value.day_of_week || ''))
+  // Normalize both sides to first-3-chars uppercase so "Monday" and "MON" both work
+  const dow = session.value.day_of_week ? session.value.day_of_week.substring(0,3).toUpperCase() : ''
+  const normDays = desDays.map(d => d.substring(0,3).toUpperCase())
+  return !desDays.length || (isDisc ? desDays.includes(session.value.session_date) : normDays.includes(dow))
 }
 function isScheduled(did) { return isScheduledDes(did) }
 
@@ -294,7 +297,9 @@ function getHeatmap(did) {
       const enr = store.enrollments.find(e => e.training_id === selT.value && e.designer_id === did)
       const ds = enr?.designer_schedule || []
       const isDisc = ds.length > 0 && ds[0].includes('-')
-      const isSched = !ds.length || (isDisc ? ds.includes(s.session_date) : ds.includes(s.day_of_week || ''))
+      const dow = s.day_of_week ? s.day_of_week.substring(0,3).toUpperCase() : ''
+      const normDs = ds.map(d => d.substring(0,3).toUpperCase())
+      const isSched = !ds.length || (isDisc ? ds.includes(s.session_date) : normDs.includes(dow))
       
       if (!isSched) return { s, state: 'x', tip: 'N/A' }
       let st = null, extraStyle = '', tip = 'UNMARKED'
@@ -490,9 +495,71 @@ function exportCSV() {
 }
 /* Ensure session grid has 14 cols on desktop and 7 on mobile just like the html file */
 .sess-grid { grid-template-columns: repeat(14, 1fr); }
+.ac { flex-shrink: 0; }
+
+/* ── Desktop session header ── */
+.att-sess-hd {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--bdr);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.att-sess-info {
+  min-width: 200px;
+}
+.att-proof-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex: 1;
+}
+.att-proof-inp {
+  width: 200px;
+  padding: 5px 9px;
+  font-size: 11px;
+}
+.att-filter-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
 @media(max-width: 640px) {
   .sess-grid { grid-template-columns: repeat(7, 1fr) !important; }
-  .hm-cell { width: 13px !important; height: 13px !important; }
+  .hm-cell { width: 13px !important; height: 13px !important; flex-shrink: 0; }
   .att-mark-mobile { width: 36px; align-items: center; justify-content: flex-start; flex-direction: column; gap: 4px; }
+
+  /* ── Mobile session header: stack vertically ── */
+  .att-sess-hd {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+  .att-sess-info {
+    min-width: 0;
+  }
+  /* Proof URL: full-width, left-aligned */
+  .att-proof-row {
+    justify-content: flex-start;
+    flex: unset;
+    width: 100%;
+  }
+  .att-proof-inp {
+    width: 100% !important;
+    flex: 1;
+    font-size: 16px !important; /* prevent iOS zoom */
+  }
+  /* Filters: flush left, wrap naturally */
+  .att-filter-row {
+    margin-left: 0;
+    flex-wrap: wrap;
+  }
 }
 </style>

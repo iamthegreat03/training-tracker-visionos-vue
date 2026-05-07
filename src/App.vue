@@ -102,19 +102,22 @@
             <span>More</span>
           </button>
         </div>
-
-        <!-- More menu overlay -->
-        <div v-if="showMoreMenu" style="position:fixed;inset:0;z-index:45;background:rgba(0,0,0,.6)" @click="showMoreMenu=false">
-          <div style="position:absolute;bottom:56px;left:0;right:0;background:var(--sb);border-top:1px solid var(--bdr-s);padding:8px 0" @click.stop>
-            <RouterLink v-for="item in adminNav" :key="item.to" :to="item.to" custom v-slot="{ navigate }">
-              <button class="ni" style="width:100%;padding:14px 20px;font-size:14px;gap:14px"
-                @click="navigate(); showMoreMenu=false">
-                <span v-html="item.icon"></span>{{ item.label }}
-              </button>
-            </RouterLink>
-          </div>
-        </div>
       </nav>
+
+      <!-- iOS PWA safe-area gap filler -->
+      <div id="bnav-saf" aria-hidden="true"></div>
+
+      <!-- More menu overlay -->
+      <div v-if="showMoreMenu" style="position:fixed;inset:0;z-index:45;background:rgba(0,0,0,.6)" @click="showMoreMenu=false">
+        <div style="position:absolute;bottom:56px;left:0;right:0;background:var(--sb);border-top:1px solid var(--bdr-s);padding:8px 0" @click.stop>
+          <RouterLink v-for="item in adminNav" :key="item.to" :to="item.to" custom v-slot="{ navigate }">
+            <button class="ni" style="width:100%;padding:14px 20px;font-size:14px;gap:14px"
+              @click="navigate(); showMoreMenu=false">
+              <span v-html="item.icon"></span>{{ item.label }}
+            </button>
+          </RouterLink>
+        </div>
+      </div>
     </template>
 
     <!-- Toast Container -->

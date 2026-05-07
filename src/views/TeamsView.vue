@@ -6,7 +6,7 @@
         <div class="sh-t">Teams</div>
         <div class="sh-s">{{ store.teams.length }} production teams · {{ store.designers.length }} designers</div>
       </div>
-      <div style="display:flex;gap:8px">
+      <div class="teams-hd-actions">
         <template v-if="reshuffleMode">
           <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--a);align-self:center">
             {{ pendingCount }} PENDING CHANGE{{ pendingCount !== 1 ? 'S' : '' }}
@@ -36,7 +36,7 @@
     </div>
 
     <!-- Team Cards Grid -->
-    <div class="teams-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bdr)">
+    <div class="teams-grid-wrap">
       <div v-for="(t, i) in store.teams" :key="t.id"
         style="background:var(--bg)"
         :style="{ borderLeft: `2px solid ${COLORS[i % COLORS.length]}` }">
@@ -408,3 +408,39 @@ function getRosterDesTrainings(did) {
   return store.trainings.filter(t => store.enrollments.some(e => e.training_id === t.id && e.designer_id === did))
 }
 </script>
+
+<style scoped>
+/* Header actions */
+.teams-hd-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Team cards grid — 4 cols desktop */
+.teams-grid-wrap {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--bdr);
+  border: 1px solid var(--bdr);
+}
+
+/* Tablet → 2 cols */
+@media(max-width: 900px) {
+  .teams-grid-wrap {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile → 1 col */
+@media(max-width: 640px) {
+  .teams-grid-wrap {
+    grid-template-columns: 1fr;
+  }
+  .teams-hd-actions {
+    gap: 6px;
+  }
+}
+</style>
