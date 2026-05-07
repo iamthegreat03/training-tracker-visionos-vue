@@ -60,8 +60,8 @@
 
       <!-- Selected Session Details -->
       <div v-if="session" class="card">
-        <div style="padding:12px 18px;border-bottom:1px solid var(--bdr);display:flex;flex-direction:column;gap:10px">
-          <div style="flex:1;min-width:200px">
+        <div style="padding:12px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <div style="min-width:200px">
             <span class="c-ttl">{{ new Date(session.session_date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase() }}</span>
             <div style="font-size:9px;color:var(--t4);font-family:'JetBrains Mono',monospace;margin-top:3px">CLICK ○ → ✓ PRESENT → ~ LATE → ✗ ABSENT → ○ CLEAR</div>
           </div>
@@ -71,7 +71,7 @@
             <a v-if="session.proof_url" :href="session.proof_url" target="_blank" class="btn btn-g btn-sm">OPEN ↗</a>
           </div>
           <!-- Attendance filter chips -->
-          <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
+          <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;margin-left:auto">
             <span style="font-size:9px;color:var(--t3);font-family:'JetBrains Mono',monospace">FILTER:</span>
             <button v-for="f in ['all','present','late','absent','unmarked']" :key="f"
               class="chip btn-xs" :class="{ on: attFilter === f }"
