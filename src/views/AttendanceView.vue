@@ -60,13 +60,13 @@
 
       <!-- Selected Session Details -->
       <div v-if="session" class="card">
-        <div class="c-hd" style="flex-wrap:wrap;gap:10px">
+        <div style="padding:12px 18px;border-bottom:1px solid var(--bdr);display:flex;flex-direction:column;gap:10px">
           <div style="flex:1;min-width:200px">
             <span class="c-ttl">{{ new Date(session.session_date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase() }}</span>
             <div style="font-size:9px;color:var(--t4);font-family:'JetBrains Mono',monospace;margin-top:3px">CLICK ○ → ✓ PRESENT → ~ LATE → ✗ ABSENT → ○ CLEAR</div>
           </div>
           <!-- Proof URL inline input -->
-          <div style="display:flex;align-items:center;gap:7px;flex-shrink:0">
+          <div style="display:flex;align-items:center;justify-content:center;gap:7px;flex:1">
             <input v-if="store.can('can_add_sessions')" class="inp" style="width:200px;padding:5px 9px;font-size:11px" placeholder="Paste screenshot / video link…" :value="session.proof_url || ''" @change="saveProofUrl(session.id, $event.target.value)" />
             <a v-if="session.proof_url" :href="session.proof_url" target="_blank" class="btn btn-g btn-sm">OPEN ↗</a>
           </div>
@@ -85,35 +85,39 @@
           <div style="padding:7px 18px;background:var(--bg2);border-bottom:1px solid var(--bdr);border-top:1px solid var(--bdr);font-size:9px;font-family:'JetBrains Mono',monospace;letter-spacing:.8px;color:var(--t4)">TEAM {{ team.name.toUpperCase() }}</div>
           <div style="padding:10px 12px;display:flex;flex-direction:column;gap:10px">
             <div v-for="d in team.members" :key="d.id" style="border:1px solid var(--bdr);background:var(--sur);transition:border-color .15s" @mouseover="$event.currentTarget.style.borderColor='var(--bdr-h)'" @mouseout="$event.currentTarget.style.borderColor='var(--bdr)'">
-              <!-- TOP: name + schedule + mark buttons -->
-              <div style="padding:12px 14px;display:flex;align-items:center;gap:10px">
+
+              <!-- TOP ROW: name + schedule + run rate + mark buttons (right) -->
+              <div style="padding:12px 14px;display:flex;align-items:flex-start;gap:10px">
                 <div style="flex:1;min-width:0">
                   <div style="font-size:14px;color:var(--t1);cursor:pointer;font-weight:400;line-height:1.2" @click="openProfile(d.id)">{{ d.name }}</div>
                   <div style="font-size:10px;color:var(--t3);margin-top:4px;display:flex;gap:8px;align-items:center">
-                    <span>{{ getScheduleStr(d.id) }}</span>
+                    <span>· {{ getScheduleStr(d.id) }}</span>
                     <span v-if="getRunRate(d.id) !== null" style="color:var(--g);font-family:'JetBrains Mono',monospace">{{ getRunRate(d.id) }}%</span>
                   </div>
-                </div>
-                
-                <!-- Desktop Heatmap -->
-                <div class="hm-wrap att-hm-mobile" style="flex:2;min-width:120px;display:none;justify-content:flex-end">
-                   <div v-for="h in getHeatmap(d.id)" :key="h.s.id" class="hm-cell" :data-s="h.state" :style="h.extraStyle">
-                     <div class="hm-tip">{{ fmtDs(h.s.session_date) }} — {{ h.tip }}</div>
-                   </div>
+
                 </div>
 
-                <!-- Desktop Mark buttons -->
-                <div class="att-mark-mobile" style="display:none">
+                <!-- Mark buttons (always visible, top-right) -->
+                <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
                   <template v-if="isScheduled(d.id) && store.can('can_mark_attendance')">
-                     <button class="ac" :class="[attClass(getAtt(d.id)?.is_present), { p: isMuAttended(d.id) }]" @click="toggleAtt(session.id, d.id)">
-                        {{ isMuAttended(d.id) ? '✓' : attLabel(getAtt(d.id)?.is_present) }}
-                     </button>
-                     <button class="ac" :style="{ borderColor: getAtt(d.id)?.notes ? 'var(--a)' : 'var(--bdr)', color: getAtt(d.id)?.notes ? 'var(--a)' : 'var(--t3)', fontSize:'13px' }" :title="getAtt(d.id)?.notes || 'Add note'" @click="openNote(session.id, d.id)">✎</button>
-                     
-                     <button v-if="(getAtt(d.id)?.is_present === false || getAtt(d.id)?.is_present === null || !getAtt(d.id)) && !isMuPending(d.id) && !isMuAttended(d.id)" class="ac" style="border-color:var(--bl);color:var(--bl);font-size:14px" title="Schedule make-up" @click="openReschedule(session.id, d.id)">↺</button>
-                     <button v-else-if="isMuPending(d.id)" class="ac" style="border-color:rgba(96,165,250,.4);color:var(--bl);font-size:8px;font-family:'JetBrains Mono',monospace" title="Make-up" @click="openMuStatus(d.id)">MU</button>
+                    <button class="ac" :class="[attClass(getAtt(d.id)?.is_present), { p: isMuAttended(d.id) }]" @click="toggleAtt(session.id, d.id)">
+                      {{ isMuAttended(d.id) ? '✓' : attLabel(getAtt(d.id)?.is_present) }}
+                    </button>
+                    <button class="ac" :style="{ borderColor: getAtt(d.id)?.notes ? 'var(--a)' : 'var(--bdr)', color: getAtt(d.id)?.notes ? 'var(--a)' : 'var(--t3)', fontSize:'13px' }" :title="getAtt(d.id)?.notes || 'Add note'" @click="openNote(session.id, d.id)">✎</button>
+                    <button v-if="(getAtt(d.id)?.is_present === false || getAtt(d.id)?.is_present === null || !getAtt(d.id)) && !isMuPending(d.id) && !isMuAttended(d.id)" class="ac" style="border-color:var(--bl);color:var(--bl);font-size:14px" title="Schedule make-up" @click="openReschedule(session.id, d.id)">↺</button>
+                    <button v-else-if="isMuPending(d.id)" class="ac" style="border-color:rgba(96,165,250,.4);color:var(--bl);font-size:8px;font-family:'JetBrains Mono',monospace" title="Make-up" @click="openMuStatus(d.id)">MU</button>
                   </template>
                   <span v-else style="font-size:9px;color:var(--t4);font-family:'JetBrains Mono',monospace;padding:0 4px">N/A</span>
+                </div>
+              </div>
+
+              <!-- BOTTOM ROW: heatmap full width -->
+              <div style="padding:6px 14px 12px;display:flex;flex-wrap:wrap;gap:3px;border-top:1px solid var(--bdr-s);background:var(--bg2)">
+                <div v-for="h in getHeatmap(d.id)" :key="h.s.id" class="hm-cell" :data-s="h.state" :style="h.extraStyle">
+                  <div class="hm-tip">{{ fmtDs(h.s.session_date) }} — {{ h.tip }}</div>
+                </div>
+                <div v-if="getHeatmap(d.id).length" style="width:100%;font-size:9px;color:var(--t4);font-family:'JetBrains Mono',monospace;margin-top:5px">
+                  {{ getHeatmap(d.id).filter(h => h.state === 'p' || h.state === 'l').length }} attended of {{ getHeatmap(d.id).filter(h => h.state && h.state !== 'x').length }} marked sessions<span v-if="getAtt(d.id)?.notes" style="color:var(--a)"> · Note: {{ getAtt(d.id).notes }}</span>
                 </div>
               </div>
             </div>
@@ -212,7 +216,6 @@ const stats = computed(() => {
 })
 
 // Filtered teams based on attFilter
-// Filtered teams based on attFilter
 const teams = computed(() => {
    if (!training.value) return []
    const desMap = new Map(store.designers.map(d => [d.id, d]))
@@ -223,7 +226,21 @@ const teams = computed(() => {
       if(!groups[t]) groups[t] = []
       groups[t].push(d)
    }
-   return Object.keys(groups).sort().map(k => ({ name: k, members: groups[k] }))
+   return Object.keys(groups).sort().map(k => ({
+      name: k,
+      members: groups[k].filter(d => {
+        if (attFilter.value === 'all') return true
+        if (!session.value) return true
+        const a = store.attendance.find(x => x.session_id === session.value.id && x.designer_id === d.id)
+        const mu = store.makeups.find(x => x.original_session_id === session.value.id && x.designer_id === d.id)
+        const val = normAtt(a?.is_present ?? null)
+        if (attFilter.value === 'present') return val === true || mu?.is_attended === true
+        if (attFilter.value === 'late')    return val === 'late'
+        if (attFilter.value === 'absent')  return val === false
+        if (attFilter.value === 'unmarked') return isScheduledDes(d.id) && val === null && !mu
+        return true
+      })
+   })).filter(t => t.members.length > 0)
 })
 
 // Auto-selects
