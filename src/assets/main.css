@@ -1553,7 +1553,7 @@
             }
 
             #page {
-                padding: 12px 10px calc(60px + env(safe-area-inset-bottom, 0px))
+                padding: 12px 10px calc(100px + env(safe-area-inset-bottom, 0px))
             }
 
             #tb {
@@ -1821,6 +1821,7 @@
 
         /* â”€â”€ BOTTOM NAV (mobile) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         #bnav {
+            display: none; 
             position: fixed;
             bottom: 0;
             left: 0;
@@ -1828,8 +1829,17 @@
             background: var(--sb);
             border-top: 1px solid var(--bdr-s);
             z-index: 40;
-            display: flex;
             padding-bottom: env(safe-area-inset-bottom, 0px)
+        }
+
+        #bnav::after {
+            content: '';
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: env(safe-area-inset-bottom, 0px);
+            background: var(--sb)
         }
 
         #bnav-inner {
