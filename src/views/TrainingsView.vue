@@ -379,8 +379,10 @@ import { useAppStore } from '@/stores/app'
 import { db } from '@/lib/supabase'
 import { pct, fmtDs, init, TODAY, DAYS, PLATFORMS } from '@/lib/utils'
 import AppModal from '@/components/AppModal.vue'
+import { useToast } from '@/composables/useToast'
 
 const store = useAppStore()
+const { toast } = useToast()
 
 const filter = ref('all')
 
@@ -665,11 +667,14 @@ async function saveTraining() {
     schedule: editT.value.schedule
   }
 
+  const isNew = !editT.value.id
   let tid = editT.value.id
   if (tid) {
-    await db.from('trainings').update(pl).eq('id', tid)
+    const { error } = await db.from('trainings').update(pl).eq('id', tid)
+    if (error) { toast(error.message, 'er'); saving.value = false; return }
   } else {
-    const { data } = await db.from('trainings').insert(pl).select()
+    const { data, error } = await db.from('trainings').insert(pl).select()
+    if (error) { toast(error.message, 'er'); saving.value = false; return }
     tid = data?.[0]?.id
   }
 
@@ -742,6 +747,14 @@ async function saveTraining() {
     if (upserts.length) {
       await db.from('training_enrollments').upsert(upserts, { onConflict: 'training_id,designer_id' })
     }
+  }
+
+  // Toast with session count info
+  const sessCount = store.sessions.filter(s => s.training_id === tid).length
+  if (isNew) {
+    toast(sessCount > 0 ? `Training created · ${sessCount} session${sessCount !== 1 ? 's' : ''} generated` : 'Training created')
+  } else {
+    toast('Training updated')
   }
 
   showEdit.value = false
