@@ -212,6 +212,7 @@ const stats = computed(() => {
 })
 
 // Filtered teams based on attFilter
+// Filtered teams based on attFilter
 const teams = computed(() => {
    if (!training.value) return []
    const desMap = new Map(store.designers.map(d => [d.id, d]))
