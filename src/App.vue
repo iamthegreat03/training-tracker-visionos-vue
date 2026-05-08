@@ -1,5 +1,5 @@
 <template>
-  <div v-if="booting" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:var(--bg)">
+  <div v-if="booting" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;background:var(--bg)">
     <div class="lp-m">PT TRACKER</div>
     <div class="spin"></div>
   </div>
@@ -56,7 +56,7 @@
               <div class="u-nm">{{ displayName }}</div>
               <div class="u-rl">{{ store.role }}</div>
             </div>
-            <button style="background:none;border:none;padding:5px;color:var(--t3);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:color .13s" title="Sign out" @click="signOut" @mouseover="$event.currentTarget.style.color='var(--t1)'" @mouseleave="$event.currentTarget.style.color='var(--t3)'">
+            <button style="background:none;border:none;padding:4px;color:var(--t3);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:7px;transition:color .13s,background .13s" title="Sign out" @click="signOut" @mouseover="$event.currentTarget.style.cssText='background:var(--sur-h);border:none;padding:4px;color:var(--t1);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:7px;transition:color .13s,background .13s'" @mouseleave="$event.currentTarget.style.cssText='background:none;border:none;padding:4px;color:var(--t3);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:7px;transition:color .13s,background .13s'">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                 <polyline points="16 17 21 12 16 7"/>
@@ -75,9 +75,8 @@
 
         <header id="tb">
           <span id="tb-title">{{ pageTitle }}</span>
-          <div id="tb-meta" style="display:flex !important;align-items:center;gap:10px">
+          <div id="tb-meta" style="display:flex;align-items:center;gap:8px">
             <button class="tt" @click="toggleTheme">{{ isDark ? '☀ Light' : '◑ Dark' }}</button>
-            <button style="background:none;border:1px solid var(--bdr);padding:5px 10px;color:var(--t2);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.5px" @click="signOut">SIGN OUT</button>
           </div>
         </header>
 

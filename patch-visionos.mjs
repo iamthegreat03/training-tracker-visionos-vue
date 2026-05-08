@@ -1,4 +1,24 @@
-/* ============================================================
+// patch-visionos.mjs — run from training-tracker-vue/ root
+// node patch-visionos.mjs
+//
+// Full VisionOS redesign for PT Tracker:
+//  1. Rewrites src/assets/main.css  — glassmorphism design system
+//  2. Rewrites src/App.vue          — new sidebar + topbar shell
+
+import { writeFileSync, readFileSync, existsSync } from 'fs'
+
+/* ─────────────────────────────────────────────────────────────
+   GUARD — must run from project root
+───────────────────────────────────────────────────────────── */
+if (!existsSync('./src/assets/main.css') || !existsSync('./src/App.vue')) {
+  console.error('✗  Run this from the training-tracker-vue/ root directory.')
+  process.exit(1)
+}
+
+/* ─────────────────────────────────────────────────────────────
+   1. main.css  — full VisionOS design system
+───────────────────────────────────────────────────────────── */
+const css = `/* ============================================================
    PT TRACKER — VisionOS Design System
    Glassmorphism · Frosted Glass · Spatial Depth
    Accent: #f07828  Fonts: Inter + JetBrains Mono
@@ -1189,3 +1209,92 @@ textarea.inp {
 @media (min-width: 641px) and (max-width: 900px) {
   .teams-grid { grid-template-columns: 1fr 1fr !important }
 }
+`
+
+writeFileSync('./src/assets/main.css', css)
+console.log('✓ src/assets/main.css — VisionOS design system written')
+
+/* ─────────────────────────────────────────────────────────────
+   2. App.vue  — read current, replace <style> and shell
+      Strategy: only rewrite the <style> block and the
+      structural wrapper elements (#sb brand, #tb, loading splash).
+      All script logic is preserved as-is.
+───────────────────────────────────────────────────────────── */
+let app = readFileSync('./src/App.vue', 'utf8')
+
+// ── 2a. Loading splash — ensure glass style ────────────────
+app = app.replace(
+  /<div v-if="booting"[^>]*>/,
+  `<div v-if="booting" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;background:var(--bg)">`
+)
+
+// ── 2b. Sidebar brand block — upgrade to new VisionOS style ─
+app = app.replace(
+  /<div class="sb-brand">[\s\S]*?<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*(?=\s*<template v-if="store\.isDesigner">)/,
+  `<div class="sb-brand">
+            <div class="sb-mark">PT</div>
+            <div>
+              <div class="sb-nm">Training Tracker</div>
+              <div class="sb-sub">{{ store.role?.toUpperCase() }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      `
+)
+
+// ── 2c. Topbar — upgrade styling ──────────────────────────
+app = app.replace(
+  `        <header id="tb">
+          <span id="tb-title">{{ pageTitle }}</span>
+          <div id="tb-meta" style="display:flex !important;align-items:center;gap:10px">
+            <button class="tt" @click="toggleTheme">{{ isDark ? '☀ Light' : '◑ Dark' }}</button>
+            <button style="background:none;border:1px solid var(--bdr);padding:5px 10px;color:var(--t2);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.5px" @click="signOut">SIGN OUT</button>
+          </div>
+        </header>`,
+  `        <header id="tb">
+          <span id="tb-title">{{ pageTitle }}</span>
+          <div id="tb-meta" style="display:flex;align-items:center;gap:8px">
+            <button class="tt" @click="toggleTheme">{{ isDark ? '☀ Light' : '◑ Dark' }}</button>
+          </div>
+        </header>`
+)
+
+// ── 2d. Sidebar footer user row — upgrade ─────────────────
+// Make the sign-out button cleaner
+app = app.replace(
+  `            <button style="background:none;border:none;padding:5px;color:var(--t3);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:color .13s" title="Sign out" @click="signOut" @mouseover="$event.currentTarget.style.color='var(--t1)'" @mouseleave="$event.currentTarget.style.color='var(--t3)'">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+            </button>`,
+  `            <button style="background:none;border:none;padding:4px;color:var(--t3);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:7px;transition:color .13s,background .13s" title="Sign out" @click="signOut" @mouseover="$event.currentTarget.style.cssText='background:var(--sur-h);border:none;padding:4px;color:var(--t1);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:7px;transition:color .13s,background .13s'" @mouseleave="$event.currentTarget.style.cssText='background:none;border:none;padding:4px;color:var(--t3);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:7px;transition:color .13s,background .13s'">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+            </button>`
+)
+
+writeFileSync('./src/App.vue', app)
+console.log('✓ src/App.vue   — shell updated (loading, topbar, sidebar brand)')
+
+/* ─────────────────────────────────────────────────────────────
+   DONE
+───────────────────────────────────────────────────────────── */
+console.log(`
+╔══════════════════════════════════════════════╗
+║   VisionOS redesign applied successfully!    ║
+╠══════════════════════════════════════════════╣
+║  Files changed:                              ║
+║    src/assets/main.css                       ║
+║    src/App.vue                               ║
+╠══════════════════════════════════════════════╣
+║  Next steps:                                 ║
+║    npm run dev                               ║
+╚══════════════════════════════════════════════╝
+`)
